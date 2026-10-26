@@ -1,0 +1,43 @@
+{
+  "name": "apple-workflow-automation",
+  "version": "1.0.0",
+  "description": "Weekly reviews, meeting prep, quick capture and focus reports for Apple Calendar, Reminders, Notes and Mail, scripted with JavaScript for Automation.",
+  "license": "MIT",
+  "author": "Giselle Da Costa",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "bin": {
+    "awa": "bin/awa"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "lint": "eslint .",
+    "test": "TZ=UTC node --test tests/",
+    "test:update": "TZ=UTC UPDATE_SNAPSHOTS=1 node --test tests/",
+    "sample": "TZ=UTC node scripts/render-sample.mjs",
+    "check": "npm run lint && npm run build && npm test"
+  },
+  "keywords": [
+    "jxa",
+    "javascript-for-automation",
+    "osascript",
+    "macos",
+    "shortcuts",
+    "calendar",
+    "reminders",
+    "notes",
+    "weekly-review"
+  ],
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "globals": "^17.13.0"
+  }
+}
