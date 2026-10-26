@@ -1,0 +1,85 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    name: Lint and test (Linux)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: ShellCheck
+        run: shellcheck bin/awa scripts/*.sh
+
+      - name: Build bundles
+        run: npm run build
+
+      - name: Unit, snapshot and CLI tests
+        run: npm test
+
+  macos:
+    name: JXA build, compile and smoke run (macOS)
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build bundles
+        run: npm run build
+
+      - name: Compile every bundle with osacompile
+        run: |
+          mkdir -p "$RUNNER_TEMP/scpt"
+          for script in dist/*.js; do
+            osacompile -l JavaScript -o "$RUNNER_TEMP/scpt/$(basename "$script" .js).scpt" "$script"
+            echo "compiled $script"
+          done
+
+      - name: Pure-logic tests
+        run: npm test
+
+      - name: Smoke run under JavaScriptCore, app access blocked
+        run: bash scripts/smoke-jxa.sh
+
+      - name: Validate the launchd template
+        run: plutil -lint examples/launchd/*.plist
