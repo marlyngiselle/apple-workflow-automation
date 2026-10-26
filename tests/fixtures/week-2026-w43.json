@@ -1,0 +1,152 @@
+{
+  "description": "Synthetic week used by the tests, the README sample and the macOS smoke run. Every name, address and link is invented.",
+  "now": "2026-10-23T16:00:00",
+  "reminderLists": ["Reminders", "Errands", "Work", "Home"],
+  "events": [
+    {
+      "id": "evt-standup",
+      "calendar": "Work",
+      "title": "Team stand-up",
+      "start": "2026-09-07T09:00:00",
+      "end": "2026-09-07T09:15:00",
+      "recurrence": "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR"
+    },
+    {
+      "id": "evt-design-review",
+      "calendar": "Work",
+      "title": "Design review #design",
+      "start": "2026-10-20T14:00:00",
+      "end": "2026-10-20T15:00:00",
+      "attendees": [
+        { "name": "Jordan Lee", "email": "jordan@example.com", "status": "accepted" },
+        { "name": "Priya Shah", "email": "priya@example.com", "status": "tentative" }
+      ]
+    },
+    {
+      "id": "evt-planning",
+      "calendar": "Work",
+      "title": "Quarterly planning #planning",
+      "start": "2026-10-21T10:00:00",
+      "end": "2026-10-21T12:30:00"
+    },
+    {
+      "id": "evt-deep-1",
+      "calendar": "Focus",
+      "title": "Deep work #deep",
+      "start": "2026-10-19T13:00:00",
+      "end": "2026-10-19T15:00:00"
+    },
+    {
+      "id": "evt-deep-2",
+      "calendar": "Focus",
+      "title": "Deep work #deep",
+      "start": "2026-10-22T09:30:00",
+      "end": "2026-10-22T11:30:00",
+      "notes": "Write the migration plan #writing"
+    },
+    {
+      "id": "evt-one-on-one",
+      "calendar": "Work",
+      "title": "1:1 with Sam",
+      "start": "2026-10-08T16:00:00",
+      "end": "2026-10-08T16:30:00",
+      "recurrence": "FREQ=WEEKLY;INTERVAL=2"
+    },
+    {
+      "id": "evt-dentist",
+      "calendar": "Personal",
+      "title": "Dentist",
+      "start": "2026-10-21T08:00:00",
+      "end": "2026-10-21T08:45:00"
+    },
+    {
+      "id": "evt-run-club",
+      "calendar": "Personal",
+      "title": "Run club #health",
+      "start": "2026-01-03T08:00:00",
+      "end": "2026-01-03T09:00:00",
+      "recurrence": "RRULE:FREQ=WEEKLY"
+    },
+    {
+      "id": "evt-conference",
+      "calendar": "Work",
+      "title": "Conference day",
+      "start": "2026-10-22",
+      "end": "2026-10-23",
+      "allDay": true
+    },
+    {
+      "id": "evt-cancelled",
+      "calendar": "Work",
+      "title": "Cancelled sync",
+      "start": "2026-10-23T11:00:00",
+      "end": "2026-10-23T11:30:00",
+      "status": "cancelled"
+    },
+    {
+      "id": "evt-demo",
+      "calendar": "Work",
+      "title": "Customer demo #demo",
+      "start": "2026-10-23T17:00:00",
+      "end": "2026-10-23T17:45:00",
+      "location": "https://zoom.us/j/1234567890",
+      "notes": "Agenda draft: https://docs.example.com/demo-plan\nRecording consent form (https://forms.example.org/consent).",
+      "attendees": [
+        { "name": "Jordan Lee", "email": "jordan@example.com", "status": "accepted" },
+        { "name": "Morgan Diaz", "email": "morgan@example.org", "status": "accepted" },
+        { "name": "", "email": "mailto:guest@example.net", "status": "declined" }
+      ]
+    },
+    {
+      "id": "evt-wrap-up",
+      "calendar": "Work",
+      "title": "Weekly wrap-up",
+      "start": "2026-10-23T18:30:00",
+      "end": "2026-10-23T19:00:00"
+    },
+    {
+      "id": "evt-monthly",
+      "calendar": "Work",
+      "title": "Monthly sync",
+      "start": "2026-10-05T15:00:00",
+      "end": "2026-10-05T16:00:00",
+      "recurrence": "FREQ=MONTHLY;BYDAY=1MO"
+    },
+    {
+      "id": "evt-offsite",
+      "calendar": "Work",
+      "title": "Team offsite",
+      "start": "2026-10-27T09:00:00",
+      "end": "2026-10-27T17:00:00"
+    }
+  ],
+  "reminders": [
+    { "id": "rem-1", "list": "Home", "title": "Book train tickets", "completed": true, "completedAt": "2026-10-19T18:00:00" },
+    { "id": "rem-2", "list": "Work", "title": "Submit expense report", "completed": true, "completedAt": "2026-10-20T11:00:00", "due": "2026-10-20T09:00:00" },
+    { "id": "rem-3", "list": "Errands", "title": "Renew library card", "completed": true, "completedAt": "2026-10-22T12:30:00" },
+    { "id": "rem-4", "list": "Work", "title": "Review open pull requests", "completed": true, "completedAt": "2026-10-23T10:00:00" },
+    { "id": "rem-5", "list": "Work", "title": "Archive old tickets", "completed": true, "completedAt": "2026-10-15T10:00:00" },
+    { "id": "rem-6", "list": "Home", "title": "Call the plumber", "completed": false, "due": "2026-10-20T09:00:00", "priority": 1 },
+    { "id": "rem-7", "list": "Work", "title": "Update the team wiki", "completed": false, "due": "2026-10-22T17:00:00" },
+    { "id": "rem-8", "list": "Home", "title": "Pay rent", "completed": false, "due": "2026-11-01T09:00:00" },
+    { "id": "rem-9", "list": "Reminders", "title": "Read chapter 4", "completed": false },
+    { "id": "rem-10", "list": "Errands", "title": "Buy coffee beans", "completed": false }
+  ],
+  "notes": [
+    { "id": "note-1", "folder": "Projects", "title": "Garden plan", "modifiedAt": "2026-10-20T19:00:00" },
+    { "id": "note-2", "folder": "Projects", "title": "Home network upgrade", "modifiedAt": "2026-10-22T21:15:00" },
+    { "id": "note-3", "folder": "Projects", "title": "Reading list", "modifiedAt": "2026-10-12T08:00:00" },
+    {
+      "id": "note-inbox",
+      "folder": "Notes",
+      "title": "Inbox",
+      "modifiedAt": "2026-10-23T15:40:00",
+      "body": "<div><h1>Inbox</h1></div>\n<div>Call the bank tomorrow 9am #errands !!</div>\n<div>Send slides friday #work</div>\n<div>- [ ] Renew passport 2026-11-15 #admin</div>\n<div>Water the plants tonight</div>\n<div>Buy coffee beans #errands</div>\n<div>- [x] Pick up dry cleaning</div>\n<div><br></div>\n<div>Plan the team offsite in 2 weeks !!!</div>\n<div>Book a table saturday at 7:30pm &amp; confirm guests</div>\n"
+    }
+  ],
+  "mail": [
+    { "subject": "Invoice for October", "sender": "Billing Team <billing@example.com>", "receivedAt": "2026-10-21T08:12:00" },
+    { "subject": "Your parcel has shipped", "sender": "Parcel Service <noreply@example.org>", "receivedAt": "2026-10-22T14:03:00" },
+    { "subject": "Workshop slides", "sender": "\"Alex Doe\" <alex@example.net>", "receivedAt": "2026-10-23T09:47:00" }
+  ]
+}
