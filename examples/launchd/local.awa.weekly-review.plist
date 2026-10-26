@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Runs awa weekly-review every Friday at 17:00 as a user agent.
+  The two placeholders (path to awa, home folder) are filled in by scripts/install-launchd.sh.
+  If the Mac is asleep at that time, launchd runs the job when it wakes.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>local.awa.weekly-review</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>__AWA__</string>
+    <string>weekly-review</string>
+    <string>--folder</string>
+    <string>Reviews</string>
+  </array>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Weekday</key>
+    <integer>5</integer>
+    <key>Hour</key>
+    <integer>17</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>__HOME__/Library/Logs/awa/weekly-review.log</string>
+  <key>StandardErrorPath</key>
+  <string>__HOME__/Library/Logs/awa/weekly-review.log</string>
+
+  <key>ProcessType</key>
+  <string>Background</string>
+</dict>
+</plist>

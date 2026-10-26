@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+# awa: Apple workflow automation.
+# Turns `awa <command> --flag value` into one JSON argument for the bundled JXA script
+# and runs it with osascript. Works with the bash 3.2 that ships with macOS.
+#
+#   awa weekly-review --folder "Reviews" --dry-run
+#   awa meeting-prep --hours 3
+#   awa inbox-to-reminders --note "Inbox" --clear
+#   awa focus-report --from 2026-10-01 --to 2026-10-31 --group-by tag --format csv
+#
+# Environment:
+#   AWA_DIST         where the built scripts live (default: <repo>/dist)
+#   AWA_PRINT_ARGS   when 1, print the JSON that would be sent and exit (used by the tests)
+
+set -euo pipefail
+
+COMMANDS="weekly-review meeting-prep inbox-to-reminders focus-report"
+PATH_FLAGS=" input output "
+
+resolve_root() {
+  local source="${BASH_SOURCE[0]}" dir
+  while [ -L "$source" ]; do
+    dir="$(cd -P "$(dirname "$source")" && pwd)"
+    source="$(readlink "$source")"
+    case "$source" in /*) ;; *) source="$dir/$source" ;; esac
+  done
+  cd -P "$(dirname "$source")/.." && pwd
+}
+
+ROOT="$(resolve_root)"
+DIST="${AWA_DIST:-$ROOT/dist}"
+
+version() {
+  sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1/p' "$ROOT/package.json" | head -n 1
+}
+
+usage() {
+  cat <<EOF
+awa $(version): weekly reviews, meeting prep, quick capture and focus reports
+for Calendar, Reminders, Notes and Mail on macOS.
+
+Usage:
+  awa <command> [--option value] [--switch]
+  awa help <command>
+  awa doctor
+  awa version
+
+Commands:
+  weekly-review        Build or refresh the weekly review note for an ISO week
+  meeting-prep         Create a prep note for each meeting in the next hours
+  inbox-to-reminders   Turn the lines of a quick-capture note into reminders
+  focus-report         Time per calendar or #tag over a date range
+
+Every command takes --dry-run (change nothing), --json (machine-readable result),
+--input <snapshot.json> (read a JSON snapshot instead of the apps) and --help.
+
+Exit codes: 0 ok, 1 unexpected, 2 usage, 3 permission, 4 not found, 5 bad input.
+EOF
+}
+
+die() {
+  printf 'awa: %s\n' "$1" >&2
+  exit "${2:-2}"
+}
+
+json_escape() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  s="${s//$'\n'/\\n}"
+  s="${s//$'\r'/\\r}"
+  s="${s//$'\t'/\\t}"
+  printf '%s' "$s"
+}
+
+# --include-all-day -> includeAllDay
+camel_case() {
+  printf '%s' "$1" | awk -F- '{ out = $1; for (i = 2; i <= NF; i++) out = out toupper(substr($i, 1, 1)) substr($i, 2); printf "%s", out }'
+}
+
+absolute_path() {
+  case "$1" in
+    /*) printf '%s' "$1" ;;
+    "~"/*) printf '%s' "$HOME/${1#\~/}" ;;
+    *) printf '%s' "$PWD/$1" ;;
+  esac
+}
+
+# Flags to one JSON object. Values stay strings; the JXA side validates and converts them.
+flags_to_json() {
+  local json="" key name value
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --*=*)
+        name="${1%%=*}"; name="${name#--}"; value="${1#*=}"; shift ;;
+      --?*)
+        name="${1#--}"; shift
+        if [ "$#" -gt 0 ] && [ "${1#--}" = "$1" ]; then value="$1"; shift; else value=""; name="$name:switch"; fi ;;
+      *)
+        die "unexpected argument \"$1\". Options look like --name value or --switch." ;;
+    esac
+    case "$name" in
+      *:switch) key="$(camel_case "${name%:switch}")"; json="$json,\"$key\":true"; continue ;;
+    esac
+    key="$(camel_case "$name")"
+    case "$PATH_FLAGS" in *" $key "*) value="$(absolute_path "$value")" ;; esac
+    json="$json,\"$key\":\"$(json_escape "$value")\""
+  done
+  printf '{%s}' "${json#,}"
+}
+
+doctor() {
+  local ok=0
+  printf 'awa %s\n' "$(version)"
+  if [ "$(uname -s)" = "Darwin" ]; then
+    printf '  ok    macOS %s\n' "$(sw_vers -productVersion 2>/dev/null || echo unknown)"
+  else
+    printf '  fail  not macOS: the commands need Calendar, Reminders and Notes\n'; ok=1
+  fi
+  if command -v osascript >/dev/null 2>&1; then printf '  ok    osascript found\n'; else printf '  fail  osascript not found\n'; ok=1; fi
+  local cmd
+  for cmd in $COMMANDS; do
+    if [ -f "$DIST/$cmd.js" ]; then printf '  ok    %s\n' "$DIST/$cmd.js"; else printf '  fail  %s missing, run: npm run build\n' "$DIST/$cmd.js"; ok=1; fi
+  done
+  printf '  info  app permissions are asked for on first use, see docs/permissions.md\n'
+  return "$ok"
+}
+
+main() {
+  [ "$#" -gt 0 ] || { usage; exit 0; }
+  local command="$1"; shift
+  case "$command" in
+    -h|--help|help)
+      if [ "$#" -gt 0 ]; then set -- "$1" --help; command="$1"; shift; else usage; exit 0; fi ;;
+    -v|--version|version) version; exit 0 ;;
+    doctor) doctor; exit $? ;;
+  esac
+  case " $COMMANDS " in
+    *" $command "*) ;;
+    *) die "unknown command \"$command\". Run awa help." ;;
+  esac
+  local json
+  json="$(flags_to_json "$@")"
+  if [ "${AWA_PRINT_ARGS:-}" = "1" ]; then
+    printf '%s %s\n' "$command" "$json"
+    exit 0
+  fi
+  [ -f "$DIST/$command.js" ] || die "$DIST/$command.js not found. Build it first: npm run build" 4
+  exec osascript -l JavaScript "$DIST/$command.js" "$json"
+}
+
+main "$@"
